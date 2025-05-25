@@ -5,28 +5,36 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'company' | 'interviewer' | 'candidate' | 'admin'>('candidate');
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password, role);
+      await login(email, password);
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
-      
-      // Navigate to appropriate dashboard
-      switch (role) {
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Invalid credentials. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Redirect based on user role after successful login
+  React.useEffect(() => {
+    if (user) {
+      switch (user.role) {
         case 'company':
           navigate('/company-dashboard');
           break;
@@ -40,14 +48,8 @@ const Login = () => {
           navigate('/admin-dashboard');
           break;
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Invalid credentials. Please try again.",
-        variant: "destructive",
-      });
     }
-  };
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-4">
@@ -66,21 +68,6 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="role">Sign in as</Label>
-                <Select value={role} onValueChange={(value: any) => setRole(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="candidate">Candidate</SelectItem>
-                    <SelectItem value="company">Hiring Company</SelectItem>
-                    <SelectItem value="interviewer">Interviewer</SelectItem>
-                    <SelectItem value="admin">Administrator</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

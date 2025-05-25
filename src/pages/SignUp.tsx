@@ -14,7 +14,7 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState<'company' | 'interviewer' | 'candidate' | 'admin'>('candidate');
-  const { signup, isLoading } = useAuth();
+  const { signup, isLoading, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,11 +23,21 @@ const SignUp = () => {
       await signup(email, password, name, role);
       toast({
         title: "Account created!",
-        description: "Welcome to SpeedyIntervue. Your account has been created successfully.",
+        description: "Please check your email to verify your account.",
       });
-      
-      // Navigate to appropriate dashboard
-      switch (role) {
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Redirect based on user role after successful signup
+  React.useEffect(() => {
+    if (user) {
+      switch (user.role) {
         case 'company':
           navigate('/company-dashboard');
           break;
@@ -41,14 +51,8 @@ const SignUp = () => {
           navigate('/admin-dashboard');
           break;
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create account. Please try again.",
-        variant: "destructive",
-      });
     }
-  };
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-4">
@@ -110,10 +114,11 @@ const SignUp = () => {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Create a password"
+                  placeholder="Create a password (min 6 characters)"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  minLength={6}
                 />
               </div>
 
