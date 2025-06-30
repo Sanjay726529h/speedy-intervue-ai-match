@@ -13,7 +13,7 @@ import os
 
 
 class Resume:
-    def __init__(self, path, GroqApi="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", GPTapi="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"):
+    def __init__(self, path, GroqApi="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", GPTapi="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"):
         self.co = Groq(api_key=GroqApi)
         self.client = OpenAI(api_key=GPTapi)
         self.path = path
@@ -239,13 +239,13 @@ class Resume:
         
         # Parse the raw text and format it
         parsed_text = self.parseResume(text)
-        parsed_json = self.parseResumeJson(parsed_text)
-        print(f"{parsed_text}\n\n{json.dumps(parsed_json, indent=4)}")
+        #parsed_json = self.parseResumeJson(parsed_text)
+        #print(f"{parsed_text}\n\n{json.dumps(parsed_json, indent=4)}")
         analysis_json = self.analysis(parsed_text, job_description)
-        print(f"{json.dumps(analysis_json, indent=4)}")
-        interviewQuestions = self.interviewQuestions(parsed_text, job_description)
-        print(f"{json.dumps(interviewQuestions, indent=4)}")
-
+        #print(f"{json.dumps(analysis_json, indent=4)}")
+        #interviewQuestions = self.interviewQuestions(parsed_text, job_description)
+        #print(f"{json.dumps(interviewQuestions, indent=4)}")
+        print(analysis_json)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
