@@ -5,6 +5,16 @@ export interface User {
   email: string;
   name: string;
   role: 'company' | 'interviewer' | 'candidate' | 'admin';
+  skills?: string[];
+  portfolio?: string;
+  resumeUploaded?: boolean;
+  resumeScore?: number;
+  jobDescription?: string;
+  profileCompletion?: number;
+  interviewsTaken?: number;
+  successRate?: number;
+  aiScore?: number;
+  mockInterviews?: number;
 }
 
 export interface AuthResponse {
@@ -23,6 +33,14 @@ export interface SignupRequest {
   password: string;
   name: string;
   role: 'company' | 'interviewer' | 'candidate' | 'admin';
+}
+
+export interface ResumeScoreResponse {
+  message: string;
+  score: number;
+  analysis: string;
+  description: string;
+  recommendations: string;
 }
 
 class ApiService {
@@ -106,6 +124,66 @@ class ApiService {
 
   async logout(): Promise<void> {
     this.clearToken();
+  }
+
+  // Candidate dashboard endpoints
+  async uploadResume(file: File): Promise<{ message: string; resumePath: string; profileCompletion: number }> {
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    const url = `${API_BASE_URL}/candidate/upload-resume`;
+    const token = this.getToken();
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to upload resume');
+    }
+
+    return data;
+  }
+
+  async addSkills(skills: string[]): Promise<{ message: string; skills: string[]; profileCompletion: number }> {
+    return this.request<{ message: string; skills: string[]; profileCompletion: number }>('/candidate/add-skills', {
+      method: 'POST',
+      body: JSON.stringify({ skills }),
+    });
+  }
+
+  async addPortfolio(portfolio: string): Promise<{ message: string; portfolio: string; profileCompletion: number }> {
+    return this.request<{ message: string; portfolio: string; profileCompletion: number }>('/candidate/add-portfolio', {
+      method: 'POST',
+      body: JSON.stringify({ portfolio }),
+    });
+  }
+
+  async addJobDescription(jobDescription: string): Promise<{ message: string; jobDescription: string; profileCompletion: number }> {
+    return this.request<{ message: string; jobDescription: string; profileCompletion: number }>('/candidate/add-job-description', {
+      method: 'POST',
+      body: JSON.stringify({ jobDescription }),
+    });
+  }
+
+  async getResumeScore(): Promise<ResumeScoreResponse> {
+    return this.request<ResumeScoreResponse>('/candidate/get-resume-score');
+  }
+
+  async getCandidateProfile(): Promise<{ user: User }> {
+    return this.request<{ user: User }>('/candidate/profile');
+  }
+
+  async startInterview(): Promise<{ message: string; mockInterviews: number }> {
+    return this.request<{ message: string; mockInterviews: number }>('/candidate/start-interview', {
+      method: 'POST',
+    });
   }
 }
 

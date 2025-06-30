@@ -41,6 +41,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  resumeScore: {
+    type: Number,
+    default: 0
+  },
+  resumeUploaded: {
+    type: Boolean,
+    default: false
+  },
+  portfolio: {
+    type: String,
+    default: ""
+  },
+  profileCompletion: {
+    type: Number,
+    default: 0
+  },
+  jobDescription: {
+    type: String,
+    default: null
+  },
   appliedJobs: {
     type: [String],
     default: []
@@ -52,6 +72,22 @@ const userSchema = new mongoose.Schema({
   location: {
     city: { type: String, default: null },
     country: { type: String, default: null }
+  },
+  interviewsTaken: {
+    type: Number,
+    default: 0
+  },
+  successRate: {
+    type: Number,
+    default: 0
+  },
+  aiScore: {
+    type: Number,
+    default: 0
+  },
+  mockInterviews: {
+    type: Number,
+    default: 0
   },
   createdAt: {
     type: Date,
@@ -82,6 +118,37 @@ userSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;
   return user;
+};
+
+// Method to calculate profile completion percentage
+userSchema.methods.calculateProfileCompletion = function() {
+  let completion = 0;
+  let totalFields = 0;
+
+  // Basic info (20%)
+  totalFields += 4;
+  if (this.firstname) completion += 1;
+  if (this.lastname) completion += 1;
+  if (this.email) completion += 1;
+  if (this.contactNumber) completion += 1;
+
+  // Resume (30%)
+  totalFields += 1;
+  if (this.resumeUploaded) completion += 1;
+
+  // Skills (20%)
+  totalFields += 1;
+  if (this.skills && this.skills.length > 0) completion += 1;
+
+  // Portfolio (15%)
+  totalFields += 1;
+  if (this.portfolio && this.portfolio.trim() !== "") completion += 1;
+
+  // Job Description (15%)
+  totalFields += 1;
+  if (this.jobDescription) completion += 1;
+
+  return Math.round((completion / totalFields) * 100);
 };
 
 export default mongoose.model('User', userSchema); 

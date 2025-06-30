@@ -49,8 +49,7 @@ export const createUserByRole = async (userData, role) => {
       const candidate = new User({
         email: userData.email,
         password: userData.password,
-        firstname: userData.name.trim(),
-        lastname: '' // Allow empty lastname
+        fullname: userData.name.trim(),
       });
       return await candidate.save();
 
@@ -67,8 +66,7 @@ export const createUserByRole = async (userData, role) => {
       const interviewer = new Interviewer({
         email: userData.email,
         password: userData.password,
-        firstname: userData.name.trim(),
-        lastname: '' // Allow empty lastname
+        fullname: userData.name.trim(),
       });
       return await interviewer.save();
 

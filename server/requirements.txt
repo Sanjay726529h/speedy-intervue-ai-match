@@ -1,0 +1,8 @@
+groq==0.4.2
+PyMuPDF==1.23.26
+sounddevice==0.4.6
+pydub==0.25.1
+Pillow==10.2.0
+pytesseract==0.3.10
+openai==1.12.0
+numpy==1.26.4 
