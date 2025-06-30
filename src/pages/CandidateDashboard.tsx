@@ -466,16 +466,6 @@ const CandidateDashboard = () => {
               
               <div className="space-y-3">
                 <div>
-                  <h4 className="font-semibold text-purple-800 mb-2">Analysis</h4>
-                  <p className="text-purple-700 text-sm">{resumeScore.analysis}</p>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-purple-800 mb-2">Description</h4>
-                  <p className="text-purple-700 text-sm">{resumeScore.description}</p>
-                </div>
-                
-                <div>
                   <h4 className="font-semibold text-purple-800 mb-2">Recommendations</h4>
                   <p className="text-purple-700 text-sm">{resumeScore.recommendations}</p>
                 </div>
